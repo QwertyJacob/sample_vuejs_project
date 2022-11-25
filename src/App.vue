@@ -9,7 +9,9 @@ An SFC is a reusable self-contained block of code that encapsulates HTML,
   <button v-on:click="startTone">Press to start Tone!</button>
   <br>
   <label>Insert the frequency of the oscillator:</label>
-  <input :value="frequency" @input="changeFrequency"/>
+<!--  <input :value="frequency" />-->
+  <!--  SHORT HAND:-->
+  <input v-model="frequency" @input="changeFrequency"/>
 </template>
 
 <script>
@@ -48,8 +50,9 @@ export default {
         osc.start();
       });
     },
-    changeFrequency(event){
-      this.frequency = event.target.value;
+    changeFrequency(){
+      // We don't need anymore this binding.
+      // this.frequency = event.target.value;
       osc.frequency.value = this.frequency;
     }
   }
