@@ -1,15 +1,32 @@
+<!--From: https://vuejs.org/tutorial
+Each .vue file is a Vue Single-File Component (SFC).
+An SFC is a reusable self-contained block of code that encapsulates HTML,
+ CSS and JavaScript that belong together, written inside a .vue file.-->
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <h1>{{ message}}</h1>
+  <h2>Welcome to the {{year.substring(year.length -5)}}'s course! </h2>
+  <HelloWorld msg="This is a message sent from the parent component"/>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
 
+/*This is called the options object*/
 export default {
+  /*The following (name, components, data, etc. are the options*/
   name: 'App',
   components: {
     HelloWorld
+  },
+  /*We can describe how the HTML should look
+  like based on JavaScript state.
+  That's exactly the main role of the "data" option.
+  Notice it is a function that returns a js object:*/
+  data(){
+    return {
+      message: 'Hello ACTAM!',
+      year: '2022/23'
+    };
   }
 }
 </script>
