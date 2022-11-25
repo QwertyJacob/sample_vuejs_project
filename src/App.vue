@@ -7,13 +7,18 @@ An SFC is a reusable self-contained block of code that encapsulates HTML,
   <h2 v-bind:class="dynamicId">Welcome to the {{year.substring(year.length -5)}}'s course! </h2>
   <HelloWorld msg="This is a message sent from the parent component"/>
   <button v-on:click="startTone">Press to start Tone!</button>
-
+  <br>
+  <label>Insert the frequency of the oscillator:</label>
+  <input :value="frequency" @input="changeFrequency"/>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
 import * as Tone from 'tone'
 
+Tone.Destination.volume.value = -9;
+let osc = new Tone.Oscillator();
+osc.toDestination();
 
 /*This is called the options object*/
 export default {
@@ -31,6 +36,7 @@ export default {
       message: 'Hello ACTAM!',
       year: '2022/23',
       dynamicId : 'subtitle',
+      frequency : ''
     };
   },
   /*This is the methods options, that contains the functions
@@ -39,10 +45,12 @@ export default {
     startTone() {
       Tone.start().then(()=>{
         console.log('Tone started!');
-        let synth = new Tone.Synth().toDestination();
-        synth.triggerAttackRelease('C4',1);
-        this.mySynth = synth;
+        osc.start();
       });
+    },
+    changeFrequency(event){
+      this.frequency = event.target.value;
+      osc.frequency.value = this.frequency;
     }
   }
 }
