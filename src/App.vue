@@ -6,10 +6,14 @@ An SFC is a reusable self-contained block of code that encapsulates HTML,
   <h1>{{ message}}</h1>
   <h2 v-bind:class="dynamicId">Welcome to the {{year.substring(year.length -5)}}'s course! </h2>
   <HelloWorld msg="This is a message sent from the parent component"/>
+  <button v-on:click="startTone">Press to start Tone!</button>
+
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
+import * as Tone from 'tone'
+
 
 /*This is called the options object*/
 export default {
@@ -26,8 +30,20 @@ export default {
     return {
       message: 'Hello ACTAM!',
       year: '2022/23',
-      dynamicId : 'subtitle'
+      dynamicId : 'subtitle',
     };
+  },
+  /*This is the methods options, that contains the functions
+  * of the SFC*/
+  methods: {
+    startTone() {
+      Tone.start().then(()=>{
+        console.log('Tone started!');
+        let synth = new Tone.Synth().toDestination();
+        synth.triggerAttackRelease('C4',1);
+        this.mySynth = synth;
+      });
+    }
   }
 }
 </script>
