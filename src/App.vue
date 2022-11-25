@@ -4,7 +4,7 @@ An SFC is a reusable self-contained block of code that encapsulates HTML,
  CSS and JavaScript that belong together, written inside a .vue file.-->
 <template>
   <h1>{{ message}}</h1>
-  <h2>Welcome to the {{year.substring(year.length -5)}}'s course! </h2>
+  <h2 v-bind:class="dynamicId">Welcome to the {{year.substring(year.length -5)}}'s course! </h2>
   <HelloWorld msg="This is a message sent from the parent component"/>
 </template>
 
@@ -25,7 +25,8 @@ export default {
   data(){
     return {
       message: 'Hello ACTAM!',
-      year: '2022/23'
+      year: '2022/23',
+      dynamicId : 'subtitle'
     };
   }
 }
@@ -40,4 +41,9 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+
+.subtitle {
+  color: red;
+}
+
 </style>
