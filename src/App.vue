@@ -6,14 +6,20 @@ An SFC is a reusable self-contained block of code that encapsulates HTML,
   <h1>{{ message}}</h1>
   <h2 v-bind:class="dynamicId">Welcome to the {{year.substring(year.length -5)}}'s course! </h2>
   <HelloWorld msg="This is a message sent from the parent component"/>
-  <button v-if="!toneReady" v-on:click="startTone">Press to start Tone!</button>
-  <div v-else>
-    <br>
-    <label>Insert the frequency of the oscillator:</label>
-    <!--  <input :value="frequency" />-->
-    <!--  SHORT HAND:-->
-    <input v-model="frequency" @input="changeFrequency"/>
+
+  <div class="toneBox">
+    <button class="myBtn" v-if="!toneReady" v-on:click="startTone">Press to start Tone!</button>
+    <div v-else>
+
+      <span>
+        <label>Insert the frequency of the oscillator:</label>
+        <input type="text" v-model="frequency" @input="changeFrequency" placeholder="440"/>
+
+      </span>
+
+    </div>
   </div>
+
 
 </template>
 
@@ -24,6 +30,7 @@ import * as Tone from 'tone'
 Tone.Destination.volume.value = -9;
 let osc = new Tone.Oscillator();
 osc.toDestination();
+
 
 /*This is called the options object*/
 export default {
@@ -42,7 +49,7 @@ export default {
       year: '2022/23',
       dynamicId : 'subtitle',
       frequency : '',
-      toneReady : false
+      toneReady : false,
     };
   },
   /*This is the methods options, that contains the functions
@@ -59,6 +66,9 @@ export default {
       // We don't need anymore this binding.
       // this.frequency = event.target.value;
       osc.frequency.value = this.frequency;
+    },
+    addNewEffect(newEffect){
+      console.log('Trying to connect to the ', newEffect,'effect')
     }
   }
 }
@@ -74,8 +84,53 @@ export default {
   margin-top: 60px;
 }
 
+span {
+  display: block;
+  padding: 15px;
+}
+.toneBox {
+  display: block;
+  padding: 10px;
+  margin:10px 0;
+}
+
+label {
+  padding: 10px;
+  margin:10px 0;
+}
+
+input[type=text] {
+  padding: 10px;
+  margin:10px 0;
+  border:0;
+  box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+}
+
+.myBtn {
+  /* remove default behavior */
+  appearance:none;
+  -webkit-appearance:none;
+
+  /* usual styles */
+  padding:10px;
+  border:none;
+  background-color:#3F51B5;
+  color:#fff;
+  font-weight:600;
+  border-radius:5px;
+  width:100%;
+}
+
+select {
+  width: 100%;
+  padding:10px;
+  border-radius:10px;
+}
+
 .subtitle {
   color: red;
 }
+
+
 
 </style>
