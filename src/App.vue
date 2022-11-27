@@ -31,9 +31,9 @@ An SFC is a reusable self-contained block of code that encapsulates HTML,
       <span>
         <label>Connected Effects:</label>
         <ul>
-          <li v-for="effect in connectedEffects" :key="effect">
-            {{effect}}
-            <button @click="removeEffect(effect)">X</button>
+          <li v-for="effect in connectedEffects" :key="effect.id">
+            {{effect.text}}
+            <button @click="removeEffect(effect.id)">X</button>
           </li>
         </ul>
       </span>
@@ -58,13 +58,15 @@ osc.toDestination();
 // let chorusEffect = new Tone.Chorus();
 // let reverbEffect = new Tone.Reverb();
 
-let distortionEffect = { id: "distortionEffect",
+let id = 0;
+
+let distortionEffect = { id: id++,
                           text: "Distortion"};
 
-let chorusEffect = { id: "chorusEffect",
+let chorusEffect = { id: id++,
                     text: "Chorus"};
 
-let reverbEffect = { id: "reverbEffect",
+let reverbEffect = { id: id++,
                     text: "Reverb"};
 
 let effectsCatalogue = [distortionEffect, chorusEffect, reverbEffect];
@@ -111,11 +113,11 @@ export default {
     },
     addNewEffect(newEffect){
       console.log('Trying to connect to the ', newEffect.text,'effect')
-      this.connectedEffects.push(newEffect.text)
+      this.connectedEffects.push({id: id++, text:newEffect.text});
       this.resetEffects();
     },
-    removeEffect(effectToRemove){
-      this.connectedEffects = this.connectedEffects.filter((t) => t !== effectToRemove);
+    removeEffect(idOfEffectToRemove){
+      this.connectedEffects = this.connectedEffects.filter((t) => t.id !== idOfEffectToRemove);
       this.resetEffects();
     },
     resetEffects(){
@@ -126,7 +128,7 @@ export default {
       let dest;
 
       for(let connectedEffect of this.connectedEffects){
-        switch(connectedEffect) {
+        switch(connectedEffect.text) {
           case "Distortion":
             currentEffect = new Tone.Distortion();
             break;
