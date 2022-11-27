@@ -6,12 +6,15 @@ An SFC is a reusable self-contained block of code that encapsulates HTML,
   <h1>{{ message}}</h1>
   <h2 v-bind:class="dynamicId">Welcome to the {{year.substring(year.length -5)}}'s course! </h2>
   <HelloWorld msg="This is a message sent from the parent component"/>
-  <button v-on:click="startTone">Press to start Tone!</button>
-  <br>
-  <label>Insert the frequency of the oscillator:</label>
-<!--  <input :value="frequency" />-->
-  <!--  SHORT HAND:-->
-  <input v-model="frequency" @input="changeFrequency"/>
+  <button v-if="!toneReady" v-on:click="startTone">Press to start Tone!</button>
+  <div v-else>
+    <br>
+    <label>Insert the frequency of the oscillator:</label>
+    <!--  <input :value="frequency" />-->
+    <!--  SHORT HAND:-->
+    <input v-model="frequency" @input="changeFrequency"/>
+  </div>
+
 </template>
 
 <script>
@@ -38,7 +41,8 @@ export default {
       message: 'Hello ACTAM!',
       year: '2022/23',
       dynamicId : 'subtitle',
-      frequency : ''
+      frequency : '',
+      toneReady : false
     };
   },
   /*This is the methods options, that contains the functions
@@ -47,6 +51,7 @@ export default {
     startTone() {
       Tone.start().then(()=>{
         console.log('Tone started!');
+        this.toneReady = true;
         osc.start();
       });
     },
