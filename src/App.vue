@@ -8,7 +8,7 @@ An SFC is a reusable self-contained block of code that encapsulates HTML,
   <HelloWorld msg="This is a message sent from the parent component"/>
 
   <div class="toneBox">
-    <button class="myBtn" v-if="!toneReady" v-on:click="startTone">Press to start Tone!</button>
+    <button class="myBtn" v-if="!toneReady" @click="startTone">Press to start Tone!</button>
     <div v-else>
 
       <span>
@@ -16,6 +16,29 @@ An SFC is a reusable self-contained block of code that encapsulates HTML,
         <input type="text" v-model="frequency" @input="changeFrequency" placeholder="440"/>
 
       </span>
+
+      <span>
+        <label>Connect to a new effect:</label>
+        <select v-model="newEffect" name="effectsSelect">
+          <option v-for="effect in effectsCat" :key="effect.id" :value="effect">{{effect.text}}
+
+          </option>
+        </select>
+        <button class="myBtn" @click="addNewEffect(newEffect)">Connect!</button>
+
+      </span>
+
+      <span>
+        <label>Connected Effects:</label>
+        <ul>
+          <li v-for="effect in connectedEffects" :key="effect">
+            {{effect}}
+            <button @click="removeEffect(effect)">X</button>
+          </li>
+        </ul>
+      </span>
+
+
 
     </div>
   </div>
@@ -30,6 +53,22 @@ import * as Tone from 'tone'
 Tone.Destination.volume.value = -9;
 let osc = new Tone.Oscillator();
 osc.toDestination();
+//
+// let distortionEffect = new Tone.Distortion();
+// let chorusEffect = new Tone.Chorus();
+// let reverbEffect = new Tone.Reverb();
+
+let distortionEffect = { id: "distortionEffect",
+                          text: "Distortion"};
+
+let chorusEffect = { id: "chorusEffect",
+                    text: "Chorus"};
+
+let reverbEffect = { id: "reverbEffect",
+                    text: "Reverb"};
+
+let effectsCatalogue = [distortionEffect, chorusEffect, reverbEffect];
+
 
 
 /*This is called the options object*/
@@ -50,6 +89,9 @@ export default {
       dynamicId : 'subtitle',
       frequency : '',
       toneReady : false,
+      connectedEffects : [],
+      newEffect : '',
+      effectsCat : effectsCatalogue
     };
   },
   /*This is the methods options, that contains the functions
@@ -68,7 +110,41 @@ export default {
       osc.frequency.value = this.frequency;
     },
     addNewEffect(newEffect){
-      console.log('Trying to connect to the ', newEffect,'effect')
+      console.log('Trying to connect to the ', newEffect.text,'effect')
+      this.connectedEffects.push(newEffect.text)
+      this.resetEffects();
+    },
+    removeEffect(effectToRemove){
+      this.connectedEffects = this.connectedEffects.filter((t) => t !== effectToRemove);
+      this.resetEffects();
+    },
+    resetEffects(){
+      osc.disconnect();
+
+      let currentEffect;
+      let source = osc;
+      let dest;
+
+      for(let connectedEffect of this.connectedEffects){
+        switch(connectedEffect) {
+          case "Distortion":
+            currentEffect = new Tone.Distortion();
+            break;
+          case "Chorus":
+            currentEffect = new Tone.Chorus();
+            break;
+          case "Reverb":
+            currentEffect = new Tone.Reverb();
+            break;
+          default:
+            console.log('Such an effect does not Exist!')
+        }
+
+        dest = currentEffect;
+        source.connect(dest);
+        source = dest;
+      }
+      source.toDestination();
     }
   }
 }
@@ -106,12 +182,14 @@ input[type=text] {
   box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
 }
 
+li {
+  list-style-type: none;
+  /* usual styles */
+  padding:10px;
+}
 .myBtn {
-  /* remove default behavior */
   appearance:none;
   -webkit-appearance:none;
-
-  /* usual styles */
   padding:10px;
   border:none;
   background-color:#3F51B5;
