@@ -26,14 +26,11 @@ let effectsCatalogue = [distortionEffect, chorusEffect, reverbEffect];
 export default {
     name: 'ToneBox',
     props: {
-        msg: String
+        toneReady : Boolean
     },
     data(){
         return {
-
-
             frequency : '',
-            toneReady : false,
             connectedEffects : [],
             newEffect : '',
             effectsCat : effectsCatalogue
@@ -43,7 +40,7 @@ export default {
         startTone() {
             Tone.start().then(()=>{
                 console.log('Tone started!');
-                this.toneReady = true;
+                this.$emit('ToneActivated', true);
                 osc.start();
             });
         },
