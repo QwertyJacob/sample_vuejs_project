@@ -3,8 +3,7 @@
     <div v-else>
       <span>
         <label>Insert the frequency of the oscillator:</label>
-        <input type="text" v-model="frequency" @input="changeFrequency" placeholder="440"/>
-
+        <input type="text" v-model="innerFrequency"  placeholder="440"/>
       </span>
       <span>
         <label>Connect to a new effect:</label>

@@ -26,28 +26,23 @@ let effectsCatalogue = [distortionEffect, chorusEffect, reverbEffect];
 export default {
     name: 'ToneBox',
     props: {
-        toneReady : Boolean
+        toneReady : Boolean,
+        frequency : Number
     },
     data(){
         return {
-            frequency : '',
             connectedEffects : [],
             newEffect : '',
-            effectsCat : effectsCatalogue
+            effectsCat : effectsCatalogue,
+            innerFrequency: this.frequency
         };
     },
     methods: {
         startTone() {
             Tone.start().then(()=>{
-                console.log('Tone started!');
-                this.$emit('ToneActivated', true);
+                this.$emit('toneActivated', true);
                 osc.start();
             });
-        },
-        changeFrequency(){
-            // We don't need anymore this binding.
-            // this.frequency = event.target.value;
-            osc.frequency.value = this.frequency;
         },
         addNewEffect(newEffect){
             console.log('Trying to connect to the ', newEffect.text,'effect')
@@ -85,6 +80,12 @@ export default {
                 source = dest;
             }
             source.toDestination();
+        }
+    },
+    watch:{
+        innerFrequency(newFrequency){
+            this.$emit('frequencyChanged', parseInt(newFrequency));
+            osc.frequency.value = parseInt(newFrequency);
         }
     }
 }

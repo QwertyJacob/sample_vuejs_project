@@ -12,13 +12,17 @@ export default {
             message: 'Hello ACTAM!',
             year: '2022/23',
             dynamicId : 'subtitle',
-            toneReady : false
+            toneReady : false,
+            frequency : 440
         };
     },
     methods:{
         updateToneReady(isToneActivated){
             this.toneReady = isToneActivated;
             console.log('Tone activated!')
+        },
+        updateFrequency(newFrequency){
+            this.frequency = newFrequency;
         }
     }
 }

@@ -1,4 +1,10 @@
 import p5 from "p5";
+import * as Tone from 'tone';
+
+let waveform = new Tone.Waveform();
+let osc = new Tone.Oscillator();
+osc.connect(waveform);
+let bufferArray, start_point, x1,y1,x2,y2;
 
 const sketch = function(p){
 
@@ -10,14 +16,34 @@ const sketch = function(p){
     };
 
     p.windowResized = function(){
-        p.resizeCanvas(p.windowWidth/2, p.windowHeight/2);
+        p.resizeCanvas(p.windowWidth/1.25, 400);
     }
     p.draw = function() {
         p.background('black');
-        p.fill('white');
-        p.textAlign(p.CENTER);
-        p.text("HELLO P5!", p.width / 2, p.height / 2);
-        p.circle(p.mouseX, p.mouseY, 100,100 )
+        p.stroke('110');
+        p.strokeWeight(10);
+        bufferArray = waveform.getValue(0);
+
+        for(let i = 0; i < bufferArray.length; i++) {
+            if (bufferArray[i - 1] < 0 && bufferArray[i] >= 0){
+                start_point = i;
+                break;
+            }
+        }
+
+        let end_point = start_point + bufferArray.length/2;
+
+        for(let i = start_point+1; i < end_point; i++) {
+
+            x1 = p.map(i-1,start_point,end_point, 0, p.width);
+            y1 = p.map(bufferArray[i-1], -1,1,0, p.height);
+
+            x2 = p.map(i,start_point,end_point, 0, p.width);
+            y2 = p.map(bufferArray[i], -1,1,0, p.height);
+
+            p.line(x1,y1, x2,y2);
+        }
+
     };
 }
 
@@ -31,5 +57,17 @@ export default {
         setTimeout(()=> {
             new p5(sketch, this.$refs.canvasOutlet);
         });
+        Tone.start().then(()=>{
+            osc.start();
+        });
+    },
+    props: {
+        frequency : Number,
+        toneReady : Boolean,
+    },
+    watch:{
+        frequency(newFrequency){
+            osc.frequency.value = parseInt(newFrequency);
+        }
     }
 }
