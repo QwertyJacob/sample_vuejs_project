@@ -1,13 +1,3 @@
-import * as Tone from 'tone'
-
-Tone.Destination.volume.value = -9;
-let osc = new Tone.Oscillator();
-osc.toDestination();
-//
-// let distortionEffect = new Tone.Distortion();
-// let chorusEffect = new Tone.Chorus();
-// let reverbEffect = new Tone.Reverb();
-
 let id = 0;
 
 let distortionEffect = { id: id++,
@@ -37,11 +27,17 @@ export default {
             innerFrequency: this.frequency
         };
     },
+    created(){
+        console.log('This is the Tone object imported just once! : ', this.$tone)
+        this.$tone.Destination.volume.value = -9;
+        this.osc = new this.$tone.Oscillator();
+        this.osc.toDestination();
+    },
     methods: {
         startTone() {
-            Tone.start().then(()=>{
+            this.$tone.start().then(()=>{
                 this.$emit('toneActivated', true);
-                osc.start();
+                this.osc.start();
             });
         },
         addNewEffect(newEffect){
@@ -54,22 +50,22 @@ export default {
             this.resetEffects();
         },
         resetEffects(){
-            osc.disconnect();
+            this.osc.disconnect();
 
             let currentEffect;
-            let source = osc;
+            let source = this.osc;
             let dest;
 
             for(let connectedEffect of this.connectedEffects){
                 switch(connectedEffect.text) {
                     case "Distortion":
-                        currentEffect = new Tone.Distortion();
+                        currentEffect = new this.$tone.Distortion();
                         break;
                     case "Chorus":
-                        currentEffect = new Tone.Chorus();
+                        currentEffect = new this.$tone.Chorus();
                         break;
                     case "Reverb":
-                        currentEffect = new Tone.Reverb();
+                        currentEffect = new this.$tone.Reverb();
                         break;
                     default:
                         console.log('Such an effect does not Exist!')
@@ -85,7 +81,7 @@ export default {
     watch:{
         innerFrequency(newFrequency){
             this.$emit('frequencyChanged', parseInt(newFrequency));
-            osc.frequency.value = parseInt(newFrequency);
+            this.osc.frequency.value = parseInt(newFrequency);
         }
     }
 }
