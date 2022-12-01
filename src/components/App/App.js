@@ -7,6 +7,12 @@ export default {
         ToneBox: ToneBox,
         P5Js : P5Js
     },
+    created(){
+        console.log('This is the Tone object imported just once! : ', this.$tone)
+        this.$tone.Destination.volume.value = -9;
+        this.osc = new this.$tone.Oscillator();
+        this.osc.toDestination();
+    },
     data(){
         return {
             message: 'Hello ACTAM!',

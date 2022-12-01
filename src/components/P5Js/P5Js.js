@@ -1,13 +1,6 @@
-import p5 from "p5";
-import * as Tone from 'tone';
-
-let waveform = new Tone.Waveform();
-let osc = new Tone.Oscillator();
-osc.connect(waveform);
-let bufferArray, start_point, x1,y1,x2,y2;
-
 const sketch = function(p){
 
+    let bufferArray, start_point, x1,y1,x2,y2;
 
     p.setup = function() {
         let canvas = p.createCanvas(p.windowWidth/1.25, 400);
@@ -22,7 +15,7 @@ const sketch = function(p){
         p.background('black');
         p.stroke('110');
         p.strokeWeight(10);
-        bufferArray = waveform.getValue(0);
+        bufferArray = p.waveform.getValue(0);
 
         for(let i = 0; i < bufferArray.length; i++) {
             if (bufferArray[i - 1] < 0 && bufferArray[i] >= 0){
@@ -55,19 +48,24 @@ export default {
     the DOM is completely rendered.*/
     mounted() {
         setTimeout(()=> {
-            new p5(sketch, this.$refs.canvasOutlet);
+            this.mysketch = new this.$p5(sketch, this.$refs.canvasOutlet);
+            this.mysketch.waveform = this.waveform;
         });
-        Tone.start().then(()=>{
-            osc.start();
+        this.$tone.start().then(()=>{
         });
+    },
+    created(){
+        this.waveform = new this.$tone.Waveform();
+        this.oscillator.connect(this.waveform);
     },
     props: {
         frequency : Number,
         toneReady : Boolean,
+        oscillator: Object
     },
     watch:{
         frequency(newFrequency){
-            osc.frequency.value = parseInt(newFrequency);
+            this.oscillator.frequency.value = parseInt(newFrequency);
         }
     }
 }

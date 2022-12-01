@@ -17,7 +17,8 @@ export default {
     name: 'ToneBox',
     props: {
         toneReady : Boolean,
-        frequency : Number
+        frequency : Number,
+        oscillator : Object
     },
     data(){
         return {
@@ -27,17 +28,11 @@ export default {
             innerFrequency: this.frequency
         };
     },
-    created(){
-        console.log('This is the Tone object imported just once! : ', this.$tone)
-        this.$tone.Destination.volume.value = -9;
-        this.osc = new this.$tone.Oscillator();
-        this.osc.toDestination();
-    },
     methods: {
         startTone() {
             this.$tone.start().then(()=>{
                 this.$emit('toneActivated', true);
-                this.osc.start();
+                this.oscillator.start();
             });
         },
         addNewEffect(newEffect){
@@ -50,10 +45,10 @@ export default {
             this.resetEffects();
         },
         resetEffects(){
-            this.osc.disconnect();
+            this.oscillator.disconnect();
 
             let currentEffect;
-            let source = this.osc;
+            let source = this.oscillator;
             let dest;
 
             for(let connectedEffect of this.connectedEffects){
@@ -81,7 +76,7 @@ export default {
     watch:{
         innerFrequency(newFrequency){
             this.$emit('frequencyChanged', parseInt(newFrequency));
-            this.osc.frequency.value = parseInt(newFrequency);
+            this.oscillator.frequency.value = parseInt(newFrequency);
         }
     }
 }
