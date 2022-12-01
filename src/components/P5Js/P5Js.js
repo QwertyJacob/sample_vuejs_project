@@ -47,8 +47,8 @@ export default {
     the DOM is completely rendered.*/
     mounted() {
         setTimeout(()=> {
-            this.mysketch = new this.$p5(sketch, this.$refs.canvasOutlet);
-            this.mysketch.waveform = this.waveform;
+            let mysketch = new this.$p5(sketch, this.$refs.canvasOutlet);
+            mysketch.vueComponent = this;
         });
     },
     created(){
