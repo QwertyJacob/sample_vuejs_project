@@ -13,26 +13,34 @@ let effectsCatalogue = [distortionEffect, chorusEffect, reverbEffect];
 
 
 
+
+
 export default {
     name: 'ToneBox',
     props: {
         toneReady : Boolean,
-        frequency : Number,
-        oscillator : Object
+        scaleNotes : Array,
+        chords : Array,
+        numOfChords : Number,
+        mainLoopInterval : String,
+        poly: Object,
+        globalScale : String,
+        mainLoop: Object
     },
     data(){
         return {
             connectedEffects : [],
             newEffect : '',
             effectsCat : effectsCatalogue,
-            innerFrequency: this.frequency
+            innerScale : this.globalScale
         };
     },
     methods: {
         startTone() {
             this.$tone.start().then(()=>{
+                this.$tone.Transport.start();
                 this.$emit('toneActivated', true);
-                this.oscillator.start();
+                this.mainLoop.start();
             });
         },
         addNewEffect(newEffect){
@@ -74,9 +82,9 @@ export default {
         }
     },
     watch:{
-        innerFrequency(newFrequency){
-            this.$emit('frequencyChanged', parseInt(newFrequency));
-            this.oscillator.frequency.value = parseInt(newFrequency);
+        innerScale(newInnerScale){
+            console.log("InnerScale Changed! New values is", newInnerScale)
+            this.$emit("scaleChanged", newInnerScale);
         }
     }
 }

@@ -6,15 +6,18 @@ An SFC is a reusable self-contained block of code that encapsulates HTML,
   <h1>{{ message}}</h1>
   <h2 v-bind:class="dynamicId">Welcome to the {{year.substring(year.length -5)}}'s course! </h2>
   <ToneBox  :toneReady="toneReady"
-            :frequency="frequency"
-            :oscillator="osc"
+            :numOfChords="numOfChords"
+            :chords="chords"
+            :scaleNotes="scaleNotes"
+            :mainLoopInterval="mainLoopInterval"
+            :mainLoop="mainLoop"
+            :globalScale="globalScale"
             @toneActivated="updateToneReady"
-            @frequencyChanged="updateFrequency"/>
-  <P5Js :frequency="frequency"
+            @scaleChanged="scaleChanged"/>
+  <SongViz
         :toneReady="toneReady"
-        :oscillator="osc"
         v-if="toneReady"
-        class="P5js"/>
+        class="SongViz"/>
 </template>
 
 <script src="./App.js"></script>
