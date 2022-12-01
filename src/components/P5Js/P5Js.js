@@ -15,7 +15,7 @@ const sketch = function(p){
         p.background('black');
         p.stroke('110');
         p.strokeWeight(10);
-        bufferArray = p.waveform.getValue(0);
+        bufferArray = p.vueComponent.waveform.getValue(0);
 
         for(let i = 0; i < bufferArray.length; i++) {
             if (bufferArray[i - 1] < 0 && bufferArray[i] >= 0){
@@ -36,8 +36,6 @@ const sketch = function(p){
 
             p.line(x1,y1, x2,y2);
         }
-
-
     };
 }
 
