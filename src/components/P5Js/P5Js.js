@@ -37,6 +37,7 @@ const sketch = function(p){
             p.line(x1,y1, x2,y2);
         }
 
+
     };
 }
 
@@ -51,12 +52,10 @@ export default {
             this.mysketch = new this.$p5(sketch, this.$refs.canvasOutlet);
             this.mysketch.waveform = this.waveform;
         });
-        this.$tone.start().then(()=>{
-        });
     },
     created(){
         this.waveform = new this.$tone.Waveform();
-        this.oscillator.connect(this.waveform);
+        this.$tone.getDestination().connect(this.waveform);
     },
     props: {
         frequency : Number,
