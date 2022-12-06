@@ -6,6 +6,31 @@
 <script>
 
 
+class Track{
+
+  constructor(parent_sfc, instrument, loopInterval, scale){
+    this.parent_SFC = parent_sfc
+    this.instrument = instrument;
+    this.instrument.toDestination();
+    this.loopInterval = loopInterval;
+    this.scale = scale;
+    this.notes = this.parent_SFC.$tonal.Scale.get(this.scale).notes;
+    this.loop = new this.parent_SFC.$tone.Loop(this.loopCallback, this.loopInterval);
+    this.loop.parent_track = this;
+    console.log('Creaeted track object with notes: ', this.notes)
+  }
+
+  loopCallback(transportTime){
+    let note_index = Math.floor(Math.random() * this.parent_track.notes.length)
+    console.log("note ", this.parent_track.notes[note_index], 'at time', transportTime)
+    this.parent_track.instrument.triggerAttackRelease(this.parent_track.notes[note_index], this.parent_track.loopInterval);
+  }
+
+  start(){
+    this.loop.start();
+  }
+}
+
 
 export default {
   name: 'App',
@@ -13,22 +38,9 @@ export default {
 
   },
   created(){
-
-    // we create an instrument:
-    this.monoSynth = new this.$tone.Synth();
-    this.monoSynth.toDestination();
-
-
-    // how many notes per loop?
-    this.notes_per_loop = 4;
-    // we create a loop function:
-    this.myLoop = new this.$tone.Loop(this.loopCallback, String(this.notes_per_loop)+"n");
-
-    // let us get some notes
-    this.scale = "C4 major";
-    this.notes = this.$tonal.Scale.get(this.scale).notes;
-
-
+    this.track1 = new Track(this, new this.$tone.Synth, "4n", "C4 major" )
+    this.track2 = new Track(this, new this.$tone.MembraneSynth, "8n", "C1 major")
+    this.track3 = new Track(this, new this.$tone.MetalSynth, "16n", "C7 major")
 
   },
   methods:{
@@ -36,17 +48,11 @@ export default {
       this.$tone.start().then( () => {
         this.$tone.Transport.start();
         console.log("Tone started!");
-        this.myLoop.start();
+        this.track1.start();
+        this.track2.start();
+        this.track3.start();
       });
-    },
-    loopCallback(transportTime){
-      let note_index = Math.floor(Math.random() * this.notes.length )
-      console.log("note ", this.notes[note_index], 'at time', transportTime)
-
-      this.monoSynth.triggerAttackRelease(this.notes[note_index], String(this.notes_per_loop)+"n");
-
     }
-
   }
 }
 </script>
