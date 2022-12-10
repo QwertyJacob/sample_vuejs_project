@@ -3,6 +3,12 @@
   <button @click="startTone">Press to start</button>
   <label>-Set the volume of the tracks:</label>
   <input v-model="volumeOfTracks" type="text"/>
+  <label>Scale:</label>
+  <select v-model="scale">
+    <option>C4 major</option>
+    <option>C4 minor</option>
+    <option>D4 phrygian</option>
+  </select>
   <div ref="p5Canvas"></div>
 </template>
 
@@ -10,7 +16,6 @@
 
 
 const sketch = function(p){
-
 
   p.setup = function() {
     let canvas = p.createCanvas(p.windowWidth/1.25, 400);
@@ -28,6 +33,8 @@ const sketch = function(p){
     p.textAlign(p.CENTER);
     p.text(p.vueComponent.track1.beat, p.width/2, p.height/2);
     p.text(p.vueComponent.track2.beat, p.width/2, p.height/2+50);
+    p.text(p.vueComponent.track3.beat, p.width/2, p.height/2+100);
+
   };
 }
 
@@ -41,8 +48,7 @@ class Track{
     this.instrument = instrument;
     this.instrument.toDestination();
     this.loopInterval = loopInterval;
-    this.scale = scale;
-    this.notes = this.parent_SFC.$tonal.Scale.get(this.scale).notes;
+    this.notes = this.parent_SFC.$tonal.Scale.get(scale).notes;
     this.loop = new this.parent_SFC.$tone.Loop(this.loopCallback, this.loopInterval);
     this.loop.parent_track = this;
     this.instrument.volume.value = -9;
@@ -69,9 +75,12 @@ class Track{
   }
 
   get beat(){
-    return this.parent_SFC.$tone.Transport.position.split(':')[1];
+    return Math.floor (this.loop.progress * parseInt(this.loopInterval.slice(0,-1)));
   }
 
+  set scale(newScale){
+    this.notes = this.parent_SFC.$tonal.Scale.get(newScale).notes;
+  }
 
 }
 
@@ -84,12 +93,13 @@ export default {
   data(){
     return {
       volumeOfTracks: -9,
+      scale: "C4 major"
     }
   },
   created(){
-    this.track1 = new Track(this, new this.$tone.Synth, "4n", "C4 major" )
-    this.track2 = new Track(this, new this.$tone.MembraneSynth, "8n", "C1 major")
-    this.track3 = new Track(this, new this.$tone.MetalSynth, "16n", "C5 major")
+    this.track1 = new Track(this, new this.$tone.Synth, "4n", this.scale )
+    this.track2 = new Track(this, new this.$tone.MembraneSynth, "6n", this.scale)
+    this.track3 = new Track(this, new this.$tone.MetalSynth, "8n", this.scale)
   },
   mounted() {
     setTimeout(()=> {
@@ -113,6 +123,11 @@ export default {
       this.track1.volume = newVolume;
       this.track2.volume = newVolume;
       this.track3.volume = newVolume;
+    },
+    scale(newScale){
+      this.track1.scale = newScale;
+      this.track2.scale = newScale;
+      this.track3.scale = newScale;
     }
   }
 }
