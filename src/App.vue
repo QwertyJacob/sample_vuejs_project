@@ -1,14 +1,30 @@
 <template>
   <h1>Classes And Inheritance</h1>
   <button @click="startTone">Press to start</button>
-  <label>-Set the volume of the tracks:</label>
-  <input v-model="volumeOfTracks" type="text"/>
-  <label>Scale:</label>
-  <select v-model="scale">
-    <option>C4 major</option>
-    <option>C4 minor</option>
-    <option>D4 phrygian</option>
-  </select>
+
+  <div class="separated">
+    <label>-Set the volume of the tracks:</label>
+    <input v-model="volumeOfTracks" type="text"/>
+  </div>
+
+
+  <div class="separated" >
+    <label>Scale:</label>
+    <select v-model="scale">
+      <option>C4 major</option>
+      <option>C4 minor</option>
+      <option>D4 phrygian</option>
+    </select>
+
+  </div>
+
+  <div class="separated" >
+    <label class="separated">Modify the motif of Track3:</label>
+    <select v-for="noteIdx in [...Array(this.track3.motif.length).keys()]" :key="noteIdx" v-model="this.track3.motif[noteIdx]">
+      <option  v-for="note in this.track3.notes.concat(['sil'])" :key="note" :value="note"> {{note}}</option>
+    </select>
+  </div>
+
   <div ref="p5Canvas"></div>
 </template>
 
@@ -37,7 +53,6 @@ const sketch = function(p){
 
   };
 }
-
 
 
 
@@ -85,6 +100,48 @@ class Track{
 }
 
 
+
+class MotifTrack extends Track{
+
+  constructor(parent_sfc, instrument, loopInterval, scale) {
+    super(parent_sfc, instrument, loopInterval, scale);
+    this.lastNoteIdx = 0;
+    this.numOfNotes = parseInt(this.loopInterval.slice(0,-1));
+    this.initializeMotif();
+    console.log('created new MotifTrack with ', this.motif, ' init motif');
+  }
+
+  initializeMotif(){
+    this.motif = []
+    for(let noteIdx of [...Array(this.numOfNotes).keys()]){
+      this.motif.push(this.notes[noteIdx % this.notes.length]);
+    }
+  }
+
+  /*
+  * We are overriding completely the loopcallback function here
+  * */
+  loopCallback(transportTime){
+    let currNote = this.parent_track.motif[this.parent_track.lastNoteIdx]
+    console.log('firing ', currNote)
+    if(currNote !== 'sil'){
+      this.parent_track.instrument.triggerAttackRelease(this.parent_track.motif[this.parent_track.lastNoteIdx], this.parent_track.loopInterval, transportTime);
+    }
+    this.parent_track.lastNoteIdx += 1;
+    this.parent_track.lastNoteIdx = this.parent_track.lastNoteIdx % this.parent_track.numOfNotes;
+  }
+
+  /*
+  * Here we are overriding but, instead of replacing everything,
+  *  we are adding functionalities to the original code.
+  * */
+  set scale(newScale){
+    super.scale = newScale;
+    this.initializeMotif();
+  }
+}
+
+
 export default {
   name: 'App',
   components: {
@@ -93,13 +150,13 @@ export default {
   data(){
     return {
       volumeOfTracks: -9,
-      scale: "C4 major"
+      scale: "C4 major",
     }
   },
   created(){
-    this.track1 = new Track(this, new this.$tone.Synth, "4n", this.scale )
-    this.track2 = new Track(this, new this.$tone.MembraneSynth, "6n", this.scale)
-    this.track3 = new Track(this, new this.$tone.MetalSynth, "8n", this.scale)
+    this.track1 = new Track(this, new this.$tone.Synth, "4n", this.scale );
+    this.track2 = new Track(this, new this.$tone.MembraneSynth, "6n", this.scale);
+    this.track3 = new MotifTrack(this, new this.$tone.MetalSynth, "8n", this.scale);
   },
   mounted() {
     setTimeout(()=> {
@@ -141,5 +198,11 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+.separated{
+  display: block;
+  margin: auto;
+  margin-top: 10px;
 }
 </style>
